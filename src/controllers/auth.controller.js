@@ -5,6 +5,13 @@ export const adminLogin = async (req,res) => {
     try{
         const result = await adminLoginService(req.body);
 
+        const productionCookieOptions = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 24 * 60 * 60 * 1000
+        }
+
         res 
             .cookie("token", result.token,cookieOptions )
             .status(200)
@@ -16,9 +23,11 @@ export const adminLogin = async (req,res) => {
 
         
     }catch (error) {
-  console.log("Status:", error.response?.status);
-  console.log("Data:", error.response?.data);
-
-  alert(error.response?.data?.message || "Login Failed");
+  console.log("Error in adminLogin:", error.message);
+  res.status(error.status || 500).json({
+    success: false,
+    message:error.message || "Internal Server Error"
+  });
+ 
 }
-}
+};

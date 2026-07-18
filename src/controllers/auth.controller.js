@@ -15,10 +15,10 @@ export const adminLogin = async (req,res) => {
             });
 
         
-    }catch (error){
-        res.status(400).json({
-            success:false,
-            message: error.message
-        });
-    }
+    }catch (error) {
+  console.log("Status:", error.response?.status);
+  console.log("Data:", error.response?.data);
+
+  alert(error.response?.data?.message || "Login Failed");
+}
 }

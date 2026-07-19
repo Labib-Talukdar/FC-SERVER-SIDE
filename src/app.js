@@ -21,7 +21,7 @@ const app = express();
 app.use(cors({
     origin: [
         'https://admin-fc.onrender.com',
-        "https://fc-client-side.onrender.com/",
+        "https://fc-client-side.onrender.com",
         "http://localhost:5173",
         "http://localhost:5174"
     ],

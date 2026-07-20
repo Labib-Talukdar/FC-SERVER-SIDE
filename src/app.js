@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 // প্রোডাক্ট এবং অথ রাউট সঠিকভাবে ইম্পোর্ট  
 import authRoutes from "./routes/auth.routs.js";
 import productRoutes from "./routes/product.routes.js";
+import orderRoutes from './routes/order.routes.js'
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +41,12 @@ connectToMongoDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);  
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/api/orders", orderRoutes);
+
+
+
+
+
 
 app.get("/", (req, res) => {
     res.send("Fashion Classy Api Running...");

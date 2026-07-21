@@ -90,6 +90,7 @@ app.use(cors({
         'https://fashionclassybd.com',
         'https://www.fashionclassybd.com',
         'https://admin-fc.onrender.com',
+        'https://admin.fashionclassybd.com',
         'https://fc-client-side.onrender.com',
         'http://localhost:5173',
         'http://localhost:5174'

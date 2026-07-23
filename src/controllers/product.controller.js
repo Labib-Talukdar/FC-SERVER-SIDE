@@ -2,44 +2,81 @@
 import productService from "../services/product.service.js";
 
 // product add control
-const addProduct = async (req,res,next) => {
-    try {
-        const productData =  {...req.body};
+// const addProduct = async (req,res,next) => {
+//     try {
+//         const productData =  {...req.body};
 
-        if(typeof productData.sizes === "string") productData.sizes = JSON.parse(productData.sizes);
-        if(typeof productData.colors === "string") productData.colors = JSON.parse(productData.colors);
+//         if(typeof productData.sizes === "string") productData.sizes = JSON.parse(productData.sizes);
+//         if(typeof productData.colors === "string") productData.colors = JSON.parse(productData.colors);
 
-         //set main image path
-         if(req.files && req.files["mainImage"]) {
-            productData.mainImage = `/uploads/${req.files["mainImage"][0].filename}`;
+//          //set main image path
+//          if(req.files && req.files["mainImage"]) {
+//             productData.mainImage = `/uploads/${req.files["mainImage"][0].filename}`;
 
-         }else {
-            return res.status(400).json({success:false, message: "Main image is"})
-         }
+//          }else {
+//             return res.status(400).json({success:false, message: "Main image is"})
+//          }
 
-         // all gallery image file path set the array
-         if(req.files && req.files["galleryImages"]) {
-            productData.galleryImages = req.files["galleryImages"].map(
-                (file) => `/uploads/${file.filename}`
-            );
-         } else{
-            productData.galleryImages = [];
-         }
+//          // all gallery image file path set the array
+//          if(req.files && req.files["galleryImages"]) {
+//             productData.galleryImages = req.files["galleryImages"].map(
+//                 (file) => `/uploads/${file.filename}`
+//             );
+//          } else{
+//             productData.galleryImages = [];
+//          }
          
  
 
-        // SKU duplicate check
-        const newProduct = await productService.createProduct(productData);
+//         // SKU duplicate check
+//         const newProduct = await productService.createProduct(productData);
 
-        res.status(201).json({
-            success: true,
-            message: "Product published successfully with images! ",
-            data: newProduct,
-        });    
-    } catch (error) {
-        next(error);
+//         res.status(201).json({
+//             success: true,
+//             message: "Product published successfully with images! ",
+//             data: newProduct,
+//         });    
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
+
+// product add control (Cloudinary Support)
+const addProduct = async (req, res, next) => {
+  try {
+    const productData = { ...req.body };
+
+    if (typeof productData.sizes === "string") productData.sizes = JSON.parse(productData.sizes);
+    if (typeof productData.colors === "string") productData.colors = JSON.parse(productData.colors);
+
+    // 💡 Main Image set - Cloudinary URL পাওয়া যাবে path ফিল্ডে
+    if (req.files && req.files["mainImage"]) {
+      productData.mainImage = req.files["mainImage"][0].path; // 👈 /uploads/ বাদ দিয়ে path দেওয়া হলো
+    } else {
+      return res.status(400).json({ success: false, message: "Main image is required!" });
     }
+
+    // 💡 Gallery Images set - Cloudinary URLs
+    if (req.files && req.files["galleryImages"]) {
+      productData.galleryImages = req.files["galleryImages"].map((file) => file.path);
+    } else {
+      productData.galleryImages = [];
+    }
+
+    const newProduct = await productService.createProduct(productData);
+
+    res.status(201).json({
+      success: true,
+      message: "Product published successfully with Cloudinary images!",
+      data: newProduct,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
+
 
 // product send of frontend controller
 const getProducts = async (req,res,next) => {
@@ -119,6 +156,34 @@ const updateProduct = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
+export const createProduct = async(req,res)=> {
+    try{
+        const mainImageUrl = req.file ? req.file.path: "";
+
+        console.log("Cloudinary URL check:", mainImageUrl);
+
+        const productData = {
+            ...req.body,
+            mainImage: mainImageUrl,
+        };
+
+        const newProduct = await productService.createProduct(productData);
+
+
+        res.status(201).json({
+            success: true,
+            message: "Product created successfully!",
+            data: newProduct
+        });
+    } catch(error) {
+        res.status(500).json({
+            success:false,
+            message:error.message
+        })
+    }
+}
 
 
 

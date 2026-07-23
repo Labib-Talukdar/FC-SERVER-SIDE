@@ -2,18 +2,22 @@
 import express from 'express';
 import mongoose from "mongoose";
 const router = express.Router();
-import productController from "../controllers/product.controller.js";
-import upload from '../middlewares/upload.middleware.js';
+import productController, { createProduct } from "../controllers/product.controller.js";
+// import upload from '../middlewares/upload.middleware.js';
+import { upload } from '../middlewares/cloudinary.js';
 import productModel from '../models/product.model.js';
 import { fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
 
-
+ 
 const cpUpload = upload.fields([
     { name: "mainImage", maxCount: 1 },
     { name: "galleryImages", maxCount: 3 }
 ]);
+
+
+router.post('/create', upload.single('mainImage'), createProduct)
 
 
 const __filename = fileURLToPath(import.meta.url);

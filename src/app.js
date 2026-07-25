@@ -1,4 +1,70 @@
 
+// // import express from 'express';
+// // import cors from 'cors';
+// // import cookieParser from 'cookie-parser';
+// // import dotenv from "dotenv";
+// // import { connectToMongoDB } from './config/db.js';
+// // import path from 'path';
+// // import { fileURLToPath } from 'url';
+
+// // // প্রোডাক্ট এবং অথ রাউট সঠিকভাবে ইম্পোর্ট  
+// // import authRoutes from "./routes/auth.routs.js";
+// // import productRoutes from "./routes/product.routes.js";
+// // import orderRoutes from './routes/order.routes.js'
+
+
+// // const __filename = fileURLToPath(import.meta.url);
+// // const __dirname = path.dirname(__filename);
+
+// // dotenv.config();
+// // const app = express();
+
+// // // Middleware
+// // app.use(cors({
+// //     origin: [
+// //         'https://admin-fc.onrender.com',
+// //         "https://fc-client-side.onrender.com",
+// //         "http://localhost:5173",
+// //         "http://localhost:5174"
+// //     ],
+// //     credentials: true
+// // }));
+
+// // app.use(express.json());
+// // app.use(express.urlencoded({extended: true}));
+// // app.use(cookieParser());
+
+// // // database connection
+// // connectToMongoDB();
+
+// // // Routes 
+// // app.use("/api/auth", authRoutes);
+// // app.use("/api/products", productRoutes);  
+// // app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// // app.use("/api/orders", orderRoutes);
+
+
+
+
+
+
+// // app.get("/", (req, res) => {
+// //     res.send("Fashion Classy Api Running...");
+// // });
+
+// // export default app;
+
+
+
+
+
+
+
+
+
+
+
+
 // import express from 'express';
 // import cors from 'cors';
 // import cookieParser from 'cookie-parser';
@@ -7,11 +73,10 @@
 // import path from 'path';
 // import { fileURLToPath } from 'url';
 
-// // প্রোডাক্ট এবং অথ রাউট সঠিকভাবে ইম্পোর্ট  
+// // প্রোডাক্ট, অর্ডার এবং অথ রাউট ইম্পোর্ট  
 // import authRoutes from "./routes/auth.routs.js";
 // import productRoutes from "./routes/product.routes.js";
-// import orderRoutes from './routes/order.routes.js'
-
+// import orderRoutes from './routes/order.routes.js';
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
@@ -19,15 +84,20 @@
 // dotenv.config();
 // const app = express();
 
-// // Middleware
+// // Middleware - CORS Config এ নতুন Custom Domain গুলো যুক্ত করা হয়েছে
 // app.use(cors({
 //     origin: [
+//         'https://fashionclassybd.com',
+//         'https://www.fashionclassybd.com',
 //         'https://admin-fc.onrender.com',
-//         "https://fc-client-side.onrender.com",
-//         "http://localhost:5173",
-//         "http://localhost:5174"
+//         'https://admin.fashionclassybd.com',
+//         'https://fc-client-side.onrender.com',
+//         'http://localhost:5173',
+//         'http://localhost:5174'
 //     ],
-//     credentials: true
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
 // app.use(express.json());
@@ -43,16 +113,31 @@
 // app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // app.use("/api/orders", orderRoutes);
 
-
-
-
-
-
 // app.get("/", (req, res) => {
 //     res.send("Fashion Classy Api Running...");
 // });
 
 // export default app;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -73,7 +158,7 @@ import { connectToMongoDB } from './config/db.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// প্রোডাক্ট, অর্ডার এবং অথ রাউট ইম্পোর্ট  
+// রাউট ইম্পোর্ট  
 import authRoutes from "./routes/auth.routs.js";
 import productRoutes from "./routes/product.routes.js";
 import orderRoutes from './routes/order.routes.js';
@@ -84,27 +169,37 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
-// Middleware - CORS Config এ নতুন Custom Domain গুলো যুক্ত করা হয়েছে
+// 🌐 এলাউড ডোমেনগুলোর লিস্ট
+const allowedOrigins = [
+  'https://fashionclassybd.com',
+  'https://www.fashionclassybd.com',
+  'https://admin.fashionclassybd.com',
+  'https://admin-fc.onrender.com',
+  'https://fc-client-side.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:5174'
+];
+
+// CORS Middleware (Dynamic origin checking)
 app.use(cors({
-    origin: [
-        'https://fashionclassybd.com',
-        'https://www.fashionclassybd.com',
-        'https://admin-fc.onrender.com',
-        'https://admin.fashionclassybd.com',
-        'https://fc-client-side.onrender.com',
-        'http://localhost:5173',
-        'http://localhost:5174'
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) {
+    // !origin দেওয়া হয়েছে যাতে Postman/Mobile browser/Server-to-server রিকোয়েস্ট ব্লক না হয়
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS Not Allowed for this origin: ' + origin));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// database connection
+// Database Connection
 connectToMongoDB();
 
 // Routes 
@@ -114,7 +209,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Fashion Classy Api Running...");
+  res.send("Fashion Classy API Running...");
 });
 
 export default app;

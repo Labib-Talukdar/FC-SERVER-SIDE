@@ -7,6 +7,10 @@ const productSchema = new mongoose.Schema(
         sku: {type: String, require: true, unique: true, trim: true},
         price:{type: Number, require: true,},
         category:{type: String, require: true},
+        subCategory: {
+            type: String,
+            default:""
+        },
         fabric: {type:String},
         shirtDetails: {type: String},
         dupattaDetails:{type: String},

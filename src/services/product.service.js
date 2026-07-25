@@ -1,38 +1,111 @@
  
-import Product from "../models/product.model.js"; // ✅ নাম মিলিয়ে ইমপোর্ট করো
+// import Product from "../models/product.model.js"; // ✅ নাম মিলিয়ে ইমপোর্ট করো
+
+// const createProduct = async (productData) => {
+//     const product = new Product(productData); // ✅ এখন কাজ করবে
+//     return await product.save();
+// };
+
+// const getAllProducts = async (filter) => {
+//     const query = {};
+
+//     // if from frontend come to data filter
+//     if (filter.color) {
+//         query.colors = filter.color; // ⚠️ নিচে নোট দেখো - schema তে ফিল্ড নাম "colors" (plural)
+//     }
+
+//     // category filter
+//     if (filter.category) {       // ✅ filters না, filter (প্যারামিটারের নামের সাথে মিল রাখতে হবে)
+         
+
+//         query.category = filter.category;
+//     }
+//     console.log("Mongoose Executing Query", query)
+
+//     const products = await Product.find(query);
+//     return await Product.find(query).sort({ createdAt: -1 });
+// };
+
+// const getAllCategories = async() => {
+//     const categories = await Product.distinct("category");
+//     return categories.filter(Boolean);
+// }
+
+// const getProductById = async(id) => {
+//     return await Product.findById(id);
+// }
+
+// export default { createProduct, getAllProducts,getAllCategories,getProductById };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import Product from "../models/product.model.js";
 
 const createProduct = async (productData) => {
-    const product = new Product(productData); // ✅ এখন কাজ করবে
+    const product = new Product(productData);
     return await product.save();
 };
 
 const getAllProducts = async (filter) => {
     const query = {};
 
-    // if from frontend come to data filter
+    // ১. কালার ফিল্টার
     if (filter.color) {
-        query.colors = filter.color; // ⚠️ নিচে নোট দেখো - schema তে ফিল্ড নাম "colors" (plural)
+        query.colors = filter.color; // Mongoose অ্যারের ভেতরে ম্যাচ করবে
     }
 
-    // category filter
-    if (filter.category) {       // ✅ filters না, filter (প্যারামিটারের নামের সাথে মিল রাখতে হবে)
-         
-
+    // ২. ক্যাটাগরি ফিল্টার
+    if (filter.category) {
         query.category = filter.category;
     }
-    console.log("Mongoose Executing Query", query)
 
-    const products = await Product.find(query);
+    // 🌟 ৩. সাব-ক্যাটাগরি ফিল্টার (নতুন যোগ করা হলো)
+    if (filter.subCategory) {
+        query.subCategory = filter.subCategory;
+    }
+
+    console.log("Mongoose Executing Query:", query);
+
+    // ডাবল রিকোয়েস্ট বাদ দিয়ে একবারে লেটেস্ট প্রোডাক্ট আগে সর্ট করে রিটার্ন করা হচ্ছে
     return await Product.find(query).sort({ createdAt: -1 });
 };
 
-const getAllCategories = async() => {
+const getAllCategories = async () => {
     const categories = await Product.distinct("category");
     return categories.filter(Boolean);
-}
+};
 
-const getProductById = async(id) => {
+const getProductById = async (id) => {
     return await Product.findById(id);
-}
+};
 
-export default { createProduct, getAllProducts,getAllCategories,getProductById };
+export default { createProduct, getAllProducts, getAllCategories, getProductById };

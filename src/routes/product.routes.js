@@ -224,19 +224,16 @@ const cpUpload = upload.fields([
 // 📌 ১. প্রোডাক্ট যোগ করার রাউট (POST /api/products/add)
 router.post("/add", cpUpload, productController.addProduct);
 
-// 📌 ২. একক ফাইল আপলোডের মাধ্যমে ক্রিয়েট করা (POST /api/products/create)
-router.post('/create', upload.single('mainImage'), productController.createProduct);
+// 📌 ২. সব প্রোডাক্ট লিস্ট গেট করা (GET /api/products)
+router.get("/", productController.getProducts);
 
-// 📌 ৩. সব প্রোডাক্ট লিস্ট গেট করা (GET /api/products)
-router.get("/", productController.getProducts); 
-
-// 📌 ৪. ক্যাটাগরি লিস্ট পাওয়া (GET /api/products/categories)
+// 📌 ৩. ক্যাটাগরি লিস্ট পাওয়া (GET /api/products/categories)
 router.get("/categories", productController.getAllCategories);
 
-// 📌 ৫. নির্দিষ্ট একটি প্রোডাক্ট গেট করা (GET /api/products/single/:id)
+// 📌 ৪. নির্দিষ্ট একটি প্রোডাক্ট গেট করা (GET /api/products/single/:id)
 router.get("/single/:id", productController.getProductById);
 
-// 📌 ৬. প্রোডাক্ট ডিলিট করার API (DELETE /api/products/delete/:id)
+// 📌 ৫. প্রোডাক্ট ডিলিট করার API (DELETE /api/products/delete/:id)
 router.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -264,7 +261,7 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-// 📌 ৭. প্রোডাক্ট আপডেট করার রাউট (PUT /api/products/update/:id)
+// 📌 ৬. প্রোডাক্ট আপডেট করার রাউট (PUT /api/products/update/:id)
 router.put("/update/:id", upload.single("mainImage"), async (req, res) => {
   try {
     const { id } = req.params;
@@ -301,7 +298,7 @@ router.put("/update/:id", upload.single("mainImage"), async (req, res) => {
     };
 
     if (req.file) {
-      updatedFields.mainImage = req.file.path || req.file.filename; 
+      updatedFields.mainImage = req.file.path || req.file.filename;
     }
 
     const updatedProduct = await productModel.findByIdAndUpdate(

@@ -208,8 +208,24 @@ app.use("/api/products", productRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/orders", orderRoutes);
 
+// app.get("/", (req, res) => {
+//   res.send("Fashion Classy API Running...");
+// });
+
 app.get("/", (req, res) => {
   res.send("Fashion Classy API Running...");
 });
 
+// 🚨 Global Error Handler — সব রাউট ও মিডলওয়্যারের (multer/cloudinary সহ) 
+// এরর এখানে ধরা পড়বে এবং JSON আকারে exact message পাঠাবে
+app.use((err, req, res, next) => {
+  console.error("🚨 GLOBAL ERROR HANDLER:", err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Something went wrong on the server",
+  });
+});
+
 export default app;
+
+ 

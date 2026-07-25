@@ -46,21 +46,23 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Set for multer cloudinaryStorage
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "fashion-classy-products",
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    resource_type: "auto", // ইমেজ অটো ডিটেক্ট করবে
   },
 });
 
-export const upload = multer({ storage });
+export const upload = multer({ 
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // ১০ মেগাবাইট পর্যন্ত সেফ লিমিট
+});
+
 export { cloudinary };

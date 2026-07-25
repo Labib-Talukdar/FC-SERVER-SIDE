@@ -183,41 +183,133 @@
 
 
 
+// import productService from "../services/product.service.js";
+
+// const addProduct = async (req, res, next) => {
+//   try {
+//     const productData = { ...req.body };
+
+//     // ১. সাইজ ও কালার পার্সিং (Safe JSON Parsing)
+//     if (typeof productData.sizes === "string") {
+//       try { productData.sizes = JSON.parse(productData.sizes); } catch (e) { productData.sizes = []; }
+//     }
+//     if (typeof productData.colors === "string") {
+//       try { productData.colors = JSON.parse(productData.colors); } catch (e) { productData.colors = []; }
+//     }
+
+//     // ২. টাইপ কনভার্সন
+//     if (productData.price) productData.price = Number(productData.price);
+//     productData.inStock = productData.inStock === "true" || productData.inStock === true;
+
+//     // ৩. মেইন ইমেজ চেক
+//     if (req.files && req.files["mainImage"] && req.files["mainImage"][0]) {
+//       productData.mainImage = req.files["mainImage"][0].path;
+//     } else {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Main cover image is required!" 
+//       });
+//     }
+
+//     // ৪. গ্যালারি ইমেজ চেক (ফিল্টার করে শুধু ভালো ইউআরএলগুলো নেওয়া)
+//     if (req.files && req.files["galleryImages"] && req.files["galleryImages"].length > 0) {
+//       productData.galleryImages = req.files["galleryImages"].map((file) => file.path);
+//     } else {
+//       productData.galleryImages = [];
+//     }
+
+//     // ৫. সেভ করা
+//     const newProduct = await productService.createProduct(productData);
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "Product published successfully!",
+//       data: newProduct,
+//     });
+//   } catch (error) {
+//     console.error("🚨 CRITICAL BACKEND ERROR IN ADD PRODUCT:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message || "Failed to create product in database",
+//     });
+//   }
+// };
+
+// export default { addProduct };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import productService from "../services/product.service.js";
 
-// ১. প্রোডাক্ট যোগ করার কন্ট্রোলার (Cloudinary Support সহ)
+// 📌 ১. প্রোডাক্ট যোগ করা
 const addProduct = async (req, res, next) => {
   try {
     const productData = { ...req.body };
 
-    // JSON parsing for arrays from FormData
+    // সাইজ ও কালার পার্সিং (Safe JSON Parsing)
     if (typeof productData.sizes === "string") {
-      productData.sizes = JSON.parse(productData.sizes);
+      try { productData.sizes = JSON.parse(productData.sizes); } catch (e) { productData.sizes = []; }
     }
     if (typeof productData.colors === "string") {
-      productData.colors = JSON.parse(productData.colors);
+      try { productData.colors = JSON.parse(productData.colors); } catch (e) { productData.colors = []; }
     }
 
-    // Data type conversions
-    if (productData.price) {
-      productData.price = Number(productData.price);
-    }
-    if (productData.inStock !== undefined) {
-      productData.inStock = productData.inStock === "true" || productData.inStock === true;
-    }
+    // টাইপ কনভার্সন
+    if (productData.price) productData.price = Number(productData.price);
+    productData.inStock = productData.inStock === "true" || productData.inStock === true;
 
-    // Main Cover Image Check
+    // মেইন ইমেজ চেক
     if (req.files && req.files["mainImage"] && req.files["mainImage"][0]) {
       productData.mainImage = req.files["mainImage"][0].path;
     } else {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Main cover image is required!" 
+      return res.status(400).json({
+        success: false,
+        message: "Main cover image is required!"
       });
     }
 
-    // Gallery Images Check
-    if (req.files && req.files["galleryImages"]) {
+    // গ্যালারি ইমেজ চেক
+    if (req.files && req.files["galleryImages"] && req.files["galleryImages"].length > 0) {
       productData.galleryImages = req.files["galleryImages"].map((file) => file.path);
     } else {
       productData.galleryImages = [];
@@ -227,40 +319,23 @@ const addProduct = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: "Product published successfully with Cloudinary images!",
+      message: "Product published successfully!",
       data: newProduct,
     });
   } catch (error) {
-    next(error);
-  }
-};
-
-// ২. সিঙ্গেল ফাইল প্রোডাক্ট তৈরি (বিকল্প)
-const createProduct = async (req, res, next) => {
-  try {
-    const mainImageUrl = req.file ? req.file.path : "";
-
-    const productData = {
-      ...req.body,
-      mainImage: mainImageUrl,
-    };
-
-    const newProduct = await productService.createProduct(productData);
-
-    return res.status(201).json({
-      success: true,
-      message: "Product created successfully!",
-      data: newProduct,
+    console.error("🚨 CRITICAL BACKEND ERROR IN ADD PRODUCT:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to create product in database",
     });
-  } catch (error) {
-    next(error);
   }
 };
 
-// ৩. প্রোডাক্ট গেট করা
+// 📌 ২. সব প্রোডাক্ট লিস্ট আনা (ফিল্টার সহ)
 const getProducts = async (req, res, next) => {
   try {
     const { color, category } = req.query;
+
     const products = await productService.getAllProducts({ color, category });
 
     return res.status(200).json({
@@ -269,91 +344,49 @@ const getProducts = async (req, res, next) => {
       data: products,
     });
   } catch (error) {
-    next(error);
+    console.error("🚨 GET PRODUCTS ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch products",
+    });
   }
 };
 
-// ৪. ক্যাটাগরি লিস্ট গেট করা
+// 📌 ৩. ক্যাটাগরি লিস্ট আনা
 const getAllCategories = async (req, res, next) => {
   try {
     const categories = await productService.getAllCategories();
+
     return res.status(200).json({
       success: true,
       data: categories,
     });
   } catch (error) {
-    next(error);
+    console.error("🚨 GET CATEGORIES ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch categories",
+    });
   }
 };
 
-// ৫. আইডি দিয়ে প্রোডাক্ট খোঁজা
+// 📌 ৪. নির্দিষ্ট একটি প্রোডাক্ট আনা
 const getProductById = async (req, res, next) => {
   try {
     const product = await productService.getProductById(req.params.id);
+
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+
     return res.status(200).json({ success: true, data: product });
   } catch (error) {
-    next(error);
-  }
-};
-
-// ৬. প্রোডাক্ট আপডেট করা
-const updateProduct = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    const updatedData = {
-      title: req.body.title,
-      sku: req.body.sku,
-      price: req.body.price ? Number(req.body.price) : undefined,
-      category: req.body.category,
-      fabric: req.body.fabric,
-      shirtDetails: req.body.shirtDetails,
-      dupattaDetails: req.body.dupattaDetails,
-      trouserDetails: req.body.trouserDetails,
-      sizes: req.body.sizes ? JSON.parse(req.body.sizes) : [],
-      colors: req.body.colors ? JSON.parse(req.body.colors) : [],
-      inStock: req.body.inStock === "true" || req.body.inStock === true,
-    };
-
-    if (req.files && req.files["mainImage"] && req.files["mainImage"][0]) {
-      updatedData.mainImage = req.files["mainImage"][0].path;
-    }
-
-    const product = await productService.updateProduct(id, updatedData);
-
-    if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Product updated successfully",
-      data: product,
+    console.error("🚨 GET PRODUCT BY ID ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch product",
     });
-  } catch (error) {
-    next(error);
   }
 };
 
-// Named Export (যা এরর দূর করবে)
-export {
-  addProduct,
-  createProduct,
-  getProducts,
-  getAllCategories,
-  getProductById,
-  updateProduct,
-};
-
-// Default Export
-export default {
-  addProduct,
-  createProduct,
-  getProducts,
-  getAllCategories,
-  getProductById,
-  updateProduct,
-};
+export default { addProduct, getProducts, getAllCategories, getProductById };

@@ -1,48 +1,6 @@
 
 import productService from "../services/product.service.js";
-
-// product add control
-// const addProduct = async (req,res,next) => {
-//     try {
-//         const productData =  {...req.body};
-
-//         if(typeof productData.sizes === "string") productData.sizes = JSON.parse(productData.sizes);
-//         if(typeof productData.colors === "string") productData.colors = JSON.parse(productData.colors);
-
-//          //set main image path
-//          if(req.files && req.files["mainImage"]) {
-//             productData.mainImage = `/uploads/${req.files["mainImage"][0].filename}`;
-
-//          }else {
-//             return res.status(400).json({success:false, message: "Main image is"})
-//          }
-
-//          // all gallery image file path set the array
-//          if(req.files && req.files["galleryImages"]) {
-//             productData.galleryImages = req.files["galleryImages"].map(
-//                 (file) => `/uploads/${file.filename}`
-//             );
-//          } else{
-//             productData.galleryImages = [];
-//          }
-         
  
-
-//         // SKU duplicate check
-//         const newProduct = await productService.createProduct(productData);
-
-//         res.status(201).json({
-//             success: true,
-//             message: "Product published successfully with images! ",
-//             data: newProduct,
-//         });    
-//     } catch (error) {
-//         next(error);
-//     }
-// };
-
-
-// product add control (Cloudinary Support)
 const addProduct = async (req, res, next) => {
   try {
     const productData = { ...req.body };

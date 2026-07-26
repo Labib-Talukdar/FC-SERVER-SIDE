@@ -34,11 +34,6 @@
 
 
 
-
-
-
-
-
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
@@ -56,7 +51,8 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "fashion-classy-products",
-    resource_type: "auto", // ইমেজ অটো ডিটেক্ট করবে
+    allowed_formats:['jpg','png',"jpeg",'webp'],
+    resource_type: "auto",
   },
 });
 

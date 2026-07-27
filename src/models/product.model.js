@@ -12,9 +12,9 @@ const productSchema = new mongoose.Schema(
             default:""
         },
         fabric: {type:String},
-        shirtDetails: {type: String},
-        dupattaDetails:{type: String},
-        trouserDetails:{type: String},
+        description:{type:String},
+        disclaimer:{type:String},
+
         sizes: [{type: String}], // Array of strings (s,m,....)
         colors: [{type:String}], // Array of strings for frontend filtering
         inStock: {type:Boolean, default: true},

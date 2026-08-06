@@ -263,9 +263,9 @@ router.delete("/delete/:id", async (req, res) => {
 
 // 📌 ৬. প্রোডাক্ট আপডেট করার রাউট (PUT /api/products/update/:id)
 router.put("/update/:id", upload.single("mainImage"), async (req, res) => {
-  try {
+  try { 
     const { id } = req.params;
-    const { title, sku, price, category, fabric, inStock } = req.body;
+    const { title, sku, price,originalPrice, category, fabric, inStock } = req.body;
 
     let sizes = [];
     let colors = [];
@@ -290,6 +290,7 @@ router.put("/update/:id", upload.single("mainImage"), async (req, res) => {
       title,
       sku,
       price: price ? Number(price) : undefined,
+      originalPrice: originalPrice !== undefined ? (originalPrice ? Number (originalPrice) : 0) :undefined,
       category,
       fabric,
       inStock: inStock === "true" || inStock === true,
@@ -310,6 +311,8 @@ router.put("/update/:id", upload.single("mainImage"), async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).json({ success: false, message: "Product not found!" });
     }
+console.log("✅ Updated DB Product:", updatedProduct);
+
 
     return res.status(200).json({
       success: true,
